@@ -192,10 +192,10 @@
 
   /* 4. Interactive loop */
   var STEPS = [
-    { num: '01', title: 'Track', text: 'We log what the kitchen buys, item by item.' },
-    { num: '02', title: 'Collect', text: 'Waste is weighed and picked up daily.' },
-    { num: '03', title: 'Digest', text: 'Larvae eat it and grow into protein.' },
-    { num: '04', title: 'Return', text: 'Feed for animals, frass for soil.' }
+    { num: '01', title: 'Log', text: 'Tenants log what they prep and what they bin.' },
+    { num: '02', title: 'Insight', text: 'The log shows where kitchens over-prep.' },
+    { num: '03', title: 'Supply', text: 'The BSF processor gets predictable volumes.' },
+    { num: '04', title: 'Value', text: 'Insect protein, bio-fertiliser, carbon offsets.' }
   ];
   var arc = document.getElementById('arc');
   var idle = document.getElementById('loopIdle');
@@ -286,5 +286,158 @@
       dash.style.setProperty('--rx', '0deg');
       dash.style.setProperty('--ry', '0deg');
     });
+  }
+
+  /* ---------- prep vs sales chart ---------- */
+  var prepCard = document.getElementById('prepCard');
+  var prepSvg = document.getElementById('prepSvg');
+  if (prepCard && prepSvg) {
+    var W = 1000, H = 260, TOP = 12, MAXV = 110;
+    var PH = [
+      { k: 'a1', name: 'Average', cls: 'avg', a: 0, b: 0.31 },
+      { k: 'pk', name: 'Peak', cls: 'peak', a: 0.31, b: 0.53 },
+      { k: 'a2', name: 'Average', cls: 'avg', a: 0.53, b: 0.85 },
+      { k: 'op', name: 'Off-peak', cls: 'off', a: 0.85, b: 1 }
+    ];
+    var sig = function (t, c, w) { return 1 / (1 + Math.exp(-(t - c) / w)); };
+    // Prep follows demand, but late: it lags sales up into the peak and down out of it.
+    var prepared = function (t) {
+      return 72 + 30 * sig(t, 0.335, 0.012) - 31 * sig(t, 0.575, 0.018) - 58 * sig(t, 0.905, 0.016)
+        + 1.2 * Math.sin(t * 40) + 0.8 * Math.sin(t * 97);
+    };
+    var sold = function (t) {
+      return 63 + 37 * sig(t, 0.315, 0.008) - 39 * sig(t, 0.538, 0.006) - 54 * sig(t, 0.868, 0.006)
+        + 0.9 * Math.sin(t * 53 + 1) + 0.6 * Math.sin(t * 131);
+    };
+    var N = 240, P = [], S = [];
+    for (var i = 0; i <= N; i++) { var t = i / N; P.push(prepared(t)); S.push(sold(t)); }
+    var X = function (i) { return (i / N) * W; };
+    var Y = function (v) { return TOP + (1 - v / MAXV) * (H - TOP - 8); };
+    var line = function (arr) { return arr.map(function (v, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(''); };
+    var band = function (upper, lower) {
+      var d = upper.map(function (v, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join('');
+      for (var j = lower.length - 1; j >= 0; j--) d += 'L' + X(j).toFixed(1) + ' ' + Y(lower[j]).toFixed(1);
+      return d + 'Z';
+    };
+    var lo = P.map(function (v, i) { return Math.min(v, S[i]); });
+    var ns = 'http://www.w3.org/2000/svg';
+    var mk = function (tag, attrs) { var el = document.createElementNS(ns, tag); for (var a in attrs) el.setAttribute(a, attrs[a]); prepSvg.appendChild(el); return el; };
+    PH.forEach(function (ph) { mk('rect', { class: 'pband', 'data-k': ph.k, x: ph.a * W, y: 0, width: (ph.b - ph.a) * W, height: H }); });
+    PH.slice(1).forEach(function (ph) { mk('line', { class: 'div', x1: ph.a * W, x2: ph.a * W, y1: 0, y2: H }); });
+    mk('path', { class: 'area', d: band(P, lo), fill: '#CFE89A' });
+    mk('path', { class: 'area', d: band(S, lo), fill: '#F6CBA8' });
+    var g = mk('g', { class: 'draw' });
+    var lp = document.createElementNS(ns, 'path'); lp.setAttribute('class', 'ln-p'); lp.setAttribute('d', line(P)); g.appendChild(lp);
+    var ls = document.createElementNS(ns, 'path'); ls.setAttribute('class', 'ln-s'); ls.setAttribute('d', line(S)); g.appendChild(ls);
+    // annotation: point into the post-peak gap
+    var ai = Math.round(0.565 * N), ay = (P[ai] + S[ai]) / 2;
+    var noteX = 0.69, noteY = 0.62;
+    mk('line', { class: 'lead', x1: X(ai), y1: Y(ay), x2: noteX * W, y2: noteY * H });
+    var note = document.getElementById('prepNote');
+    note.style.left = (noteX * 100) + '%';
+    note.style.top = (noteY * 100) + '%';
+
+    var phasesEl = document.getElementById('prepPhases');
+    var bands = prepSvg.querySelectorAll('.pband');
+    var setBand = function (k) {
+      bands.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-k') === k); });
+      phasesEl.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b.dataset.k === k); });
+    };
+    PH.forEach(function (ph) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = ph.cls; b.textContent = ph.name; b.dataset.k = ph.k;
+      b.style.flex = String(ph.b - ph.a);
+      b.addEventListener('mouseenter', function () { setBand(ph.k); });
+      b.addEventListener('mouseleave', function () { setBand(null); });
+      b.addEventListener('focus', function () { setBand(ph.k); });
+      b.addEventListener('blur', function () { setBand(null); });
+      phasesEl.appendChild(b);
+    });
+
+    var chart = document.getElementById('prepChart');
+    var guide = document.getElementById('prepGuide'), dP = document.getElementById('prepDotP'), dS = document.getElementById('prepDotS'), tip = document.getElementById('prepTip');
+    var show = function (t) {
+      t = Math.max(0, Math.min(1, t));
+      var i = Math.round(t * N), ph = PH.filter(function (p) { return t >= p.a && t <= p.b; })[0] || PH[3];
+      var pv = P[i], sv = S[i], diff = Math.round(pv - sv);
+      var pct = (t * 100) + '%';
+      guide.style.left = pct; dP.style.left = pct; dS.style.left = pct;
+      dP.style.top = (Y(pv) / H * 100) + '%'; dS.style.top = (Y(sv) / H * 100) + '%';
+      tip.innerHTML = '<b>' + ph.name + '</b><br>Prepared ' + Math.round(pv) + ' · Sold ' + Math.round(sv) + '<br>' +
+        (diff > 0 ? '<span class="w">Over-prep +' + diff + ' portions</span>' : diff < 0 ? '<span class="u">Sold out: ' + (-diff) + ' short</span>' : 'On target');
+      var w = chart.clientWidth, x = t * w, tw = tip.offsetWidth || 170;
+      tip.style.left = (x + 16 + tw > w ? Math.max(0, x - 16 - tw) : x + 16) + 'px';
+      setBand(ph.k);
+      chart.classList.add('hover');
+    };
+    var hide = function () { chart.classList.remove('hover'); setBand(null); };
+    chart.addEventListener('mousemove', rafThrottle(function (e) {
+      var r = chart.getBoundingClientRect(); show((e.clientX - r.left) / r.width);
+    }));
+    chart.addEventListener('mouseleave', hide);
+    chart.addEventListener('touchmove', function (e) {
+      var r = chart.getBoundingClientRect(); show((e.touches[0].clientX - r.left) / r.width);
+    }, { passive: true });
+    chart.addEventListener('touchend', hide);
+    var kt = 0.57;
+    chart.addEventListener('focus', function () { show(kt); });
+    chart.addEventListener('blur', hide);
+    chart.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { kt = Math.min(1, kt + 0.02); show(kt); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { kt = Math.max(0, kt - 0.02); show(kt); e.preventDefault(); }
+    });
+
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var pio = new IntersectionObserver(function (en) {
+        if (en[0].isIntersecting) { prepCard.classList.add('in'); pio.disconnect(); }
+      }, { threshold: 0.35 });
+      pio.observe(prepCard);
+    } else {
+      prepCard.classList.add('in');
+    }
+  }
+
+  /* ---------- glow cards: mouse-follow light ---------- */
+  document.querySelectorAll('.glow-card').forEach(function (card) {
+    card.addEventListener('mousemove', rafThrottle(function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--gx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--gy', (e.clientY - r.top) + 'px');
+    }));
+  });
+
+  /* ---------- count-up numbers ---------- */
+  var counters = document.querySelectorAll('.impact-num, .stat-big');
+  var runCount = function (el) {
+    var txt = el.textContent, m = txt.match(/[\d,.]+/);
+    if (!m) return;
+    var raw = m[0], target = parseFloat(raw.replace(/,/g, '')), comma = raw.indexOf(',') > -1;
+    var pre = txt.slice(0, m.index), post = txt.slice(m.index + raw.length);
+    var t0 = null, dur = 1400;
+    var fmt = function (v) { v = Math.round(v); return comma ? v.toLocaleString('en-US') : String(v); };
+    var step = function (ts) {
+      if (!t0) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = pre + fmt(target * e) + post;
+      if (k < 1) requestAnimationFrame(step); else el.textContent = txt;
+    };
+    requestAnimationFrame(step);
+  };
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { runCount(en.target); cio.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    counters.forEach(function (el) { cio.observe(el); });
+  }
+
+  /* ---------- roadmap reveal ---------- */
+  var roadmap = document.getElementById('roadmap');
+  if (roadmap) {
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var rio = new IntersectionObserver(function (en) {
+        if (en[0].isIntersecting) { roadmap.classList.add('in'); rio.disconnect(); }
+      }, { threshold: 0.3 });
+      rio.observe(roadmap);
+    } else { roadmap.classList.add('in'); }
   }
 })();
