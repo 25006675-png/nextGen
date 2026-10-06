@@ -21,6 +21,11 @@ npm run dev          # http://localhost:3000
 - `lib/calendar.ts`: Malaysian public holidays, Ramadan and school holidays (approximate dates)
 - `lib/config.ts`: app name, BSF threshold, CO₂e factor (an assumption to be verified)
 - `prisma/seed.ts`: loads the simulated kopitiam (over-orders perishables by ~20%)
-- `app/`: Dashboard `/`, Log waste `/log`, Smart order `/order`, BSF pickup `/bsf`, ESG `/esg` and printable report `/esg/report`
+- `public/larvaloop/`: the LarvaLoop landing page, served at `/` ("Open the app" → `/log`)
+- `app/`: Log waste `/log`, Insights `/insights`, Smart order `/order`, ESG `/esg` and printable report `/esg/report`, BSF pickup `/bsf` (opened from Insights)
 
-SQLite is for local demos; switch the Prisma datasource to Postgres to deploy on Vercel.
+## Deploy (Render)
+
+`render.yaml` is a Render Blueprint: in the Render dashboard choose **New → Blueprint**, pick this GitHub repo and click **Apply**. Render builds with `npm ci && npm run build` and starts with `npm run start:render`, which creates the SQLite database, loads the demo data if it is empty, and runs `next start`.
+
+On the free plan the database and photos reset whenever Render restarts the app (each deploy, and when it wakes after 15 minutes idle), and the demo data is reloaded relative to that day. Open the site a minute before presenting so it is awake. Vercel is not suitable as-is: its file system is read-only, so SQLite writes and photo uploads would fail (it would need Postgres and blob storage).

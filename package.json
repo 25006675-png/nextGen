@@ -10,6 +10,7 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma db push && tsx prisma/seed.ts",
+    "start:render": "prisma db push --skip-generate && tsx prisma/seed.ts --if-empty && next start",
     "pitch": "tsx --conditions=react-server scripts/pitch-analysis.ts",
     "postinstall": "prisma generate"
   },

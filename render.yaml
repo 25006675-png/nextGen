@@ -1,0 +1,21 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this repo → Apply.
+#
+# Free plan: no persistent disk, so the SQLite database and waste photos live on the
+# instance's own disk. They reset whenever Render restarts the app (each deploy, and
+# when a free instance wakes after 15 minutes idle); on start the app reloads the
+# 90-day demo data relative to that day.
+#
+# To keep logged data between restarts: switch to a paid plan, add a disk
+# (mountPath /var/data) and point the database and uploads at it (see README).
+services:
+  - type: web
+    name: larvaloop
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:render
+    healthCheckPath: /log
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
