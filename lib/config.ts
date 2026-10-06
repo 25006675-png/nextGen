@@ -1,5 +1,4 @@
-// Placeholder until the final product name is chosen.
-export const APP_NAME = "WasteLess";
+export const APP_NAME = "LarvaLoop";
 export const BUSINESS_NAME = "Kopitiam Ah Seng";
 
 export const REASONS = ["EXPIRED", "SPOILED", "OVERBOUGHT", "TRIMMINGS"] as const;

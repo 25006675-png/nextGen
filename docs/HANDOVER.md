@@ -1,4 +1,4 @@
-# Handover: LarvaLoop app (working name "WasteLess")
+# Handover: LarvaLoop app
 
 For whoever takes over UX and visual polish. The model, data and numbers are done and tested. Your job is to make the flow obvious and the screens look great **without changing what the numbers mean**.
 
@@ -14,7 +14,7 @@ npm run pitch        # regenerate the backtested headline numbers (lib/pitch/res
 
 Run `npm run db:reset` right before every demo: logging waste and booking pickups change the data.
 
-The app name is a placeholder: change `APP_NAME` in `lib/config.ts`. The landing page in `public/larvaloop/` calls the product **LarvaLoop**.
+The app name is set by `APP_NAME` in `lib/config.ts` (LarvaLoop, matching the landing page in `public/larvaloop/`).
 
 ## 2. The story the app tells
 
@@ -78,7 +78,8 @@ All data is **simulated** (`lib/demo-data.ts`) and labelled as such. Keep the "D
 - [x] On phones the 3D chart waits for a "Tap to rotate" tap, so swiping scrolls (done).
 - [ ] On Home, the first "Use first" alert is often a batch expiring *today* at 100% risk, so its fan chart is solid red. For the demo, tap **Tofu** or **Fresh milk** for a more interesting fan, or default-select the most interesting alert.
 - [ ] The seed has no waste photos, so the ESG "photo evidence" rate is 0%. Attach sample photos to some logs in `lib/demo-data.ts` if this matters.
-- [ ] Rename to LarvaLoop (`APP_NAME`) and swap the "W" logo tile for the LarvaLoop mark.
+- [x] Rename to LarvaLoop (`APP_NAME`).
+- [ ] Swap the letter logo tile ("L") for the LarvaLoop mark.
 
 **"3D-in-2D" visual ideas** (depth without WebGL, cheap and readable)
 - **Isometric stock shelf** on Use first: each batch as an isometric crate whose fill level shows stock left, and whose colour (forest → amber → brick) shows expiry risk. Tapping a crate opens the 1,000-futures fan.

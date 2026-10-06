@@ -1,4 +1,4 @@
-# LarvaLoop app (working name "WasteLess")
+# LarvaLoop app
 
 Inventory and waste platform for F&B SMEs: predicts waste before you buy, recommends order quantities, and routes BSF-eligible waste to black soldier fly farms.
 
