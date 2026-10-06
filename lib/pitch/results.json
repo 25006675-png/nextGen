@@ -1,0 +1,421 @@
+{
+  "today": "2026-10-06",
+  "dataFrom": "2026-07-08",
+  "dataTo": "2026-10-05",
+  "window": {
+    "from": "2026-08-25",
+    "to": "2026-09-21",
+    "days": 28,
+    "events": [
+      "Maulidur Rasul",
+      "School holidays",
+      "Merdeka Day",
+      "Malaysia Day"
+    ]
+  },
+  "assumptions": {
+    "lostSaleMult": 3,
+    "co2ePerKg": 0.5,
+    "runs": 1000
+  },
+  "savings": {
+    "perItem": [
+      {
+        "name": "Chicken",
+        "unit": "kg",
+        "usualOrder": 5,
+        "smartOrder": 3.6923,
+        "usualWasteRM": 134.397,
+        "smartWasteRM": 0,
+        "usualWasteKg": 12.2179,
+        "smartWasteKg": 0,
+        "usualMissedRM": 0,
+        "smartMissedRM": 3.6717,
+        "netSavingRM": 130.7253
+      },
+      {
+        "name": "White bread",
+        "unit": "loaf",
+        "usualOrder": 8,
+        "smartOrder": 5.7778,
+        "usualWasteRM": 101.8595,
+        "smartWasteRM": 0,
+        "usualWasteKg": 16.0831,
+        "smartWasteKg": 0,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0.288,
+        "netSavingRM": 101.5714
+      },
+      {
+        "name": "Prawns",
+        "unit": "kg",
+        "usualOrder": 1,
+        "smartOrder": 0.7692,
+        "usualWasteRM": 81.5001,
+        "smartWasteRM": 13.267,
+        "usualWasteKg": 2.5469,
+        "smartWasteKg": 0.4146,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0,
+        "netSavingRM": 68.2331
+      },
+      {
+        "name": "Tofu",
+        "unit": "pcs",
+        "usualOrder": 25,
+        "smartOrder": 17.3077,
+        "usualWasteRM": 84.9215,
+        "smartWasteRM": 2.5443,
+        "usualWasteKg": 21.2304,
+        "smartWasteKg": 0.6361,
+        "usualMissedRM": 0,
+        "smartMissedRM": 28.0995,
+        "netSavingRM": 54.2777
+      },
+      {
+        "name": "Kaya",
+        "unit": "kg",
+        "usualOrder": 2,
+        "smartOrder": 1.2,
+        "usualWasteRM": 38.5174,
+        "smartWasteRM": 0,
+        "usualWasteKg": 2.1399,
+        "smartWasteKg": 0,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0,
+        "netSavingRM": 38.5174
+      },
+      {
+        "name": "Bean sprouts",
+        "unit": "kg",
+        "usualOrder": 2,
+        "smartOrder": 1.5278,
+        "usualWasteRM": 41.9994,
+        "smartWasteRM": 7.2569,
+        "usualWasteKg": 10.4998,
+        "smartWasteKg": 1.8142,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0,
+        "netSavingRM": 34.7425
+      },
+      {
+        "name": "Fresh milk",
+        "unit": "L",
+        "usualOrder": 7,
+        "smartOrder": 6.2,
+        "usualWasteRM": 46.446,
+        "smartWasteRM": 16.7236,
+        "usualWasteKg": 6.3786,
+        "smartWasteKg": 2.2967,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0,
+        "netSavingRM": 29.7224
+      },
+      {
+        "name": "Kangkung",
+        "unit": "kg",
+        "usualOrder": 2.5,
+        "smartOrder": 2,
+        "usualWasteRM": 34.9173,
+        "smartWasteRM": 6.1559,
+        "usualWasteKg": 6.9835,
+        "smartWasteKg": 1.2312,
+        "usualMissedRM": 0,
+        "smartMissedRM": 0.0124,
+        "netSavingRM": 28.749
+      },
+      {
+        "name": "Fish cake",
+        "unit": "kg",
+        "usualOrder": 3,
+        "smartOrder": 2.4,
+        "usualWasteRM": 33.1881,
+        "smartWasteRM": 0.9732,
+        "usualWasteKg": 2.3706,
+        "smartWasteKg": 0.0695,
+        "usualMissedRM": 0,
+        "smartMissedRM": 6.2368,
+        "netSavingRM": 25.9781
+      },
+      {
+        "name": "Yellow noodles",
+        "unit": "kg",
+        "usualOrder": 4,
+        "smartOrder": 3.2308,
+        "usualWasteRM": 26.6442,
+        "smartWasteRM": 0,
+        "usualWasteKg": 5.9209,
+        "smartWasteKg": 0,
+        "usualMissedRM": 0,
+        "smartMissedRM": 1.7124,
+        "netSavingRM": 24.9319
+      },
+      {
+        "name": "Sawi",
+        "unit": "kg",
+        "usualOrder": 2,
+        "smartOrder": 1.5769,
+        "usualWasteRM": 25.1758,
+        "smartWasteRM": 0.5521,
+        "usualWasteKg": 4.5774,
+        "smartWasteKg": 0.1004,
+        "usualMissedRM": 0,
+        "smartMissedRM": 2.7306,
+        "netSavingRM": 21.8931
+      },
+      {
+        "name": "Tomatoes",
+        "unit": "kg",
+        "usualOrder": 4,
+        "smartOrder": 3.2,
+        "usualWasteRM": 33.5633,
+        "smartWasteRM": 8.5867,
+        "usualWasteKg": 5.1636,
+        "smartWasteKg": 1.321,
+        "usualMissedRM": 0,
+        "smartMissedRM": 9.8628,
+        "netSavingRM": 15.1137
+      },
+      {
+        "name": "Kuey teow",
+        "unit": "kg",
+        "usualOrder": 4.5,
+        "smartOrder": 3.8077,
+        "usualWasteRM": 30.2211,
+        "smartWasteRM": 8.849,
+        "usualWasteKg": 7.5553,
+        "smartWasteKg": 2.2122,
+        "usualMissedRM": 0,
+        "smartMissedRM": 14.2399,
+        "netSavingRM": 7.1323
+      }
+    ],
+    "total": {
+      "usualWasteRM": 713.3506,
+      "smartWasteRM": 64.9087,
+      "usualWasteKg": 103.6678,
+      "smartWasteKg": 10.0959,
+      "usualMissedRM": 0,
+      "smartMissedRM": 66.8542,
+      "netSavingRM": 581.5878,
+      "wasteCut": 0.909
+    },
+    "habitCheck": {
+      "replayWasteRM": 656.206,
+      "loggedWasteRM": 641.4267
+    },
+    "excluded": [
+      "Eggs",
+      "Condensed milk",
+      "Rice"
+    ]
+  },
+  "sensitivity": [
+    {
+      "label": "10%",
+      "overOrderScale": 0.5,
+      "effectiveOverOrder": 0.146,
+      "total": {
+        "usualWasteRM": 339.3681,
+        "smartWasteRM": 60.763,
+        "usualWasteKg": 44.8147,
+        "smartWasteKg": 9.0595,
+        "usualMissedRM": 2.8227,
+        "smartMissedRM": 73.0212,
+        "netSavingRM": 208.4066,
+        "wasteCut": 0.821
+      }
+    },
+    {
+      "label": "20%",
+      "overOrderScale": 1,
+      "effectiveOverOrder": 0.2989,
+      "total": {
+        "usualWasteRM": 713.3506,
+        "smartWasteRM": 64.9087,
+        "usualWasteKg": 103.6678,
+        "smartWasteKg": 10.0959,
+        "usualMissedRM": 0,
+        "smartMissedRM": 66.8542,
+        "netSavingRM": 581.5878,
+        "wasteCut": 0.909
+      }
+    },
+    {
+      "label": "30%",
+      "overOrderScale": 1.5,
+      "effectiveOverOrder": 0.344,
+      "total": {
+        "usualWasteRM": 822.6025,
+        "smartWasteRM": 64.9087,
+        "usualWasteKg": 121.1916,
+        "smartWasteKg": 10.0959,
+        "usualMissedRM": 0,
+        "smartMissedRM": 66.8542,
+        "netSavingRM": 690.8397,
+        "wasteCut": 0.9211
+      }
+    }
+  ],
+  "alerts": {
+    "batches": 96,
+    "binned": 85,
+    "predictions": 381,
+    "baseRate": 0.895,
+    "auc": 0.8815,
+    "brier": 0.0717,
+    "brierBaseline": 0.094,
+    "thresholds": [
+      {
+        "at": 0.3,
+        "recall": 1,
+        "precision": 0.8854,
+        "valueRecall": 1,
+        "leadDays": 2.4
+      },
+      {
+        "at": 0.5,
+        "recall": 0.9882,
+        "precision": 0.8936,
+        "valueRecall": 0.998,
+        "leadDays": 2.3333
+      }
+    ],
+    "calibration": [
+      {
+        "from": 0,
+        "to": 0.1,
+        "count": 5,
+        "predicted": 0.046,
+        "actual": 0
+      },
+      {
+        "from": 0.1,
+        "to": 0.3,
+        "count": 7,
+        "predicted": 0.2587,
+        "actual": 0.4286
+      },
+      {
+        "from": 0.3,
+        "to": 0.5,
+        "count": 18,
+        "predicted": 0.4063,
+        "actual": 0.6111
+      },
+      {
+        "from": 0.5,
+        "to": 0.7,
+        "count": 43,
+        "predicted": 0.6115,
+        "actual": 0.7442
+      },
+      {
+        "from": 0.7,
+        "to": 0.9,
+        "count": 76,
+        "predicted": 0.8021,
+        "actual": 0.8553
+      },
+      {
+        "from": 0.9,
+        "to": 1,
+        "count": 232,
+        "predicted": 0.9832,
+        "actual": 0.9914
+      }
+    ]
+  },
+  "alertsLean": {
+    "label": "10%",
+    "batches": 96,
+    "binned": 51,
+    "predictions": 369,
+    "baseRate": 0.5908,
+    "auc": 0.905,
+    "brier": 0.1263,
+    "brierBaseline": 0.2418,
+    "thresholds": [
+      {
+        "at": 0.3,
+        "recall": 1,
+        "precision": 0.6538,
+        "valueRecall": 1,
+        "leadDays": 2.3725
+      },
+      {
+        "at": 0.5,
+        "recall": 1,
+        "precision": 0.7083,
+        "valueRecall": 1,
+        "leadDays": 2.1569
+      }
+    ],
+    "calibration": [
+      {
+        "from": 0,
+        "to": 0.1,
+        "count": 52,
+        "predicted": 0.0301,
+        "actual": 0.0385
+      },
+      {
+        "from": 0.1,
+        "to": 0.3,
+        "count": 45,
+        "predicted": 0.1963,
+        "actual": 0.1556
+      },
+      {
+        "from": 0.3,
+        "to": 0.5,
+        "count": 28,
+        "predicted": 0.4023,
+        "actual": 0.5
+      },
+      {
+        "from": 0.5,
+        "to": 0.7,
+        "count": 47,
+        "predicted": 0.5979,
+        "actual": 0.4681
+      },
+      {
+        "from": 0.7,
+        "to": 0.9,
+        "count": 72,
+        "predicted": 0.8057,
+        "actual": 0.7083
+      },
+      {
+        "from": 0.9,
+        "to": 1,
+        "count": 125,
+        "predicted": 0.9752,
+        "actual": 0.976
+      }
+    ]
+  },
+  "accuracy": {
+    "daily": {
+      "model": 0.2079,
+      "naive": 0.2802,
+      "habit": 0.3358
+    },
+    "weekly": {
+      "model": 0.0811,
+      "naive": 0.1166,
+      "habit": 0.2479
+    },
+    "habitBias": 0.2461
+  },
+  "projection": {
+    "rmPerYear": 6979.0535,
+    "kgFoodSavedPerYear": 1122.8619,
+    "kgDivertedPerYear": 188.9963,
+    "co2ePerYear": 655.9291
+  },
+  "app": {
+    "forwardSavingRMPerWeek": 139.5221
+  }
+}

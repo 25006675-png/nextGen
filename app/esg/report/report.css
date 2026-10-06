@@ -1,0 +1,26 @@
+/* Print layout for the ESG report: A4, no app chrome, keep blocks whole. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 14mm 16mm;
+  }
+  main:has(.esg-report) {
+    max-width: none;
+    padding: 0;
+  }
+  .esg-report {
+    font-size: 10pt;
+  }
+  .esg-report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .esg-report h2,
+  .esg-report h3 {
+    break-after: avoid;
+  }
+  .esg-report tr,
+  .esg-report .keep {
+    break-inside: avoid;
+  }
+}

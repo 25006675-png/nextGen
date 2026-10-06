@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Item {
+  id             Int        @id @default(autoincrement())
+  name           String     @unique
+  unit           String // kg | pcs | L
+  category       String // produce | meat | dairy | dry | bakery
+  unitCost       Float // RM per unit
+  shelfLifeDays  Int
+  usualOrder     Float // what the SME habitually orders per delivery
+  packSize       Float // round recommended orders to this
+  orderEveryDays Int // delivery cadence; usualOrder is per delivery
+  kgPerUnit      Float      @default(1) // for kg/CO2 reporting when unit is pcs or L
+  purchases      Purchase[]
+  usages         Usage[]
+  wasteLogs      WasteLog[]
+}
+
+model Purchase {
+  id          Int      @id @default(autoincrement())
+  itemId      Int
+  item        Item     @relation(fields: [itemId], references: [id])
+  qty         Float
+  remaining   Float // unused qty left in this lot (FIFO)
+  unitCost    Float
+  purchasedAt DateTime
+  expiresAt   DateTime
+}
+
+model Usage {
+  id     Int      @id @default(autoincrement())
+  itemId Int
+  item   Item     @relation(fields: [itemId], references: [id])
+  qty    Float
+  date   DateTime
+}
+
+model WasteLog {
+  id          Int      @id @default(autoincrement())
+  itemId      Int
+  item        Item     @relation(fields: [itemId], references: [id])
+  qty         Float
+  costRM      Float
+  reason      String // EXPIRED | SPOILED | OVERBOUGHT | TRIMMINGS
+  photoPath   String?
+  loggedAt    DateTime @default(now())
+  bsfEligible Boolean
+  pickupId    Int?
+  pickup      Pickup?  @relation(fields: [pickupId], references: [id])
+}
+
+model Pickup {
+  id           Int        @id @default(autoincrement())
+  batchCode    String     @unique
+  partnerFarm  String
+  scheduledFor DateTime
+  status       String // SCHEDULED | COLLECTED
+  totalKg      Float
+  returnType   String // FRASS | CREDIT
+  collectedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  wasteLogs    WasteLog[]
+}

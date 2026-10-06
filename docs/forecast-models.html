@@ -1,0 +1,323 @@
+<title>WasteLess Forecast Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; each model = text + its own chart side by side, stacking on phones. */
+:root {
+  --bg: #f5f8f6; --surface: #ffffff; --fg: #17221e; --muted: #56655f; --line: #dbe3df;
+  --accent: #0d7a63; --accent-soft: #d6ede6; --waste: #c4471a; --mark: #aab6b1;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1513; --surface: #161f1c; --fg: #e5edea; --muted: #95a39e; --line: #2a3632;
+    --accent: #3cc3a0; --accent-soft: #173a31; --waste: #f07c4c; --mark: #55635e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1513; --surface: #161f1c; --fg: #e5edea; --muted: #95a39e; --line: #2a3632;
+  --accent: #3cc3a0; --accent-soft: #173a31; --waste: #f07c4c; --mark: #55635e; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); padding: 0 16px; }
+.page { max-width: 960px; margin: 0 auto; padding-block: 40px 56px; display: grid; gap: 36px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 5vw, 40px); letter-spacing: -0.01em; }
+h2 { font-size: 22px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 62ch; margin-top: 10px; }
+.eyebrow { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+
+/* Pipeline */
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: stretch; gap: 8px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.step b { display: block; font-weight: 600; }
+.step span { color: var(--muted); font-size: 13px; }
+.step.model { border-color: var(--accent); }
+.arrow { align-self: center; color: var(--muted); font-family: var(--mono); }
+.shared { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.shared code { font-family: var(--mono); color: var(--fg); }
+@media (max-width: 720px) {
+  .flow { grid-template-columns: 1fr; }
+  .arrow { transform: rotate(90deg); justify-self: center; }
+}
+
+/* Model sections */
+.model-sec { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 28px; padding-top: 28px; border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .model-sec { grid-template-columns: 1fr; } }
+.text { display: grid; gap: 12px; align-content: start; }
+.q { font-weight: 600; }
+ol.logic { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.out { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.out strong { font-family: var(--mono); font-weight: 500; }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 10px; min-width: 0; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.chart-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+svg .lbl-strong { fill: var(--fg); font-weight: 500; }
+svg .lbl-accent { fill: var(--accent); font-weight: 500; }
+svg .lbl-waste { fill: var(--waste); font-weight: 500; }
+.grid-line { stroke: var(--line); stroke-width: 1; }
+.axis { stroke: var(--mark); stroke-width: 1; }
+.bar-past { fill: var(--mark); }
+.bar-fc { fill: var(--accent); }
+.bar-run { fill: var(--waste); opacity: .55; }
+.avg-line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.cut-line { stroke: var(--fg); stroke-width: 1.5; }
+.fc-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.path-ok { fill: none; stroke: var(--accent); stroke-width: 1.2; opacity: .35; }
+.path-bad { fill: none; stroke: var(--waste); stroke-width: 1.2; opacity: .45; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+/* Results */
+.results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 28px; border-top: 1px solid var(--line); }
+@media (max-width: 720px) { .results { grid-template-columns: 1fr; } }
+.result { display: grid; gap: 4px; align-content: start; }
+.result .num { font: 600 26px var(--display); font-variant-numeric: tabular-nums; }
+.result .num s { color: var(--muted); font-weight: 600; text-decoration-thickness: 2px; }
+.result p { font-size: 13px; color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); }
+</style>
+
+<main class="page">
+  <header>
+    <div class="eyebrow">WasteLess · how the predictions work</div>
+    <h1>Three models, one goal: buy only what you'll use</h1>
+    <p class="lede">Every number in the app comes from the shop's own sales history. A simple forecast guesses daily usage, a quantile buffer turns that guess into a safe order size, and a Monte Carlo simulation plays out hundreds of possible weeks to find which stock will expire and how much money will be wasted.</p>
+  </header>
+
+  <section aria-label="How the models connect">
+    <div class="flow">
+      <div class="step"><b>Sales history</b><span>Daily usage per item, plus holidays</span></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="step model"><b>1 · Moving average</b><span>How much will we use each day?</span></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="step model"><b>2 · Quantile buffer</b><span>How much should we order?</span></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="step model"><b>3 · Monte Carlo</b><span>What will expire? How much RM wasted?</span></div>
+    </div>
+    <p class="shared">Models 2 and 3 share one extra input: how wrong model 1 was on each of the last 28 days, stored as <code>actual ÷ forecast</code> (e.g. 1.15 = sold 15% more than predicted). This is the backtest.</p>
+  </section>
+
+  <!-- 1. Moving average -->
+  <section class="model-sec">
+    <div class="text">
+      <div class="eyebrow">Model 1 · Demand forecast</div>
+      <h2>Day-of-week moving average</h2>
+      <p class="q">How much chicken will we use next Monday?</p>
+      <ol class="logic">
+        <li>Take the same weekday from the last 4 weeks.</li>
+        <li>Remove holiday effects from those days, then average them.</li>
+        <li>If the target day is a holiday or festive day, apply its multiplier.</li>
+      </ol>
+      <p class="note">Simple on purpose: it beats "same as last week" and the shop's habit. With more data it can be swapped for Prophet behind the same function.</p>
+      <div class="out">Output: <strong id="ma-out">~1.03 kg</strong> of chicken next Monday</div>
+    </div>
+    <figure>
+      <div class="chart-title">Chicken used on Mondays (kg)</div>
+      <svg id="chart-ma" viewBox="0 0 440 230" role="img" aria-label="Bar chart: four past Mondays and the forecast for next Monday, which is their average"></svg>
+      <div class="legend"><span><i style="background:var(--mark)"></i>Past Mondays</span><span><i style="background:var(--accent)"></i>Forecast = their average</span></div>
+    </figure>
+  </section>
+
+  <!-- 2. Quantile -->
+  <section class="model-sec">
+    <div class="text">
+      <div class="eyebrow">Model 2 · Smart order size</div>
+      <h2>Quantile buffer</h2>
+      <p class="q">Forecast says 3.2 kg until the next delivery. Order exactly that?</p>
+      <ol class="logic">
+        <li>Replay the backtest errors 2,000 times to see how much the next 3 days could really need.</li>
+        <li>Pick a <b>service level</b>: how often the order should be enough. It depends on cost: running out loses about 3× the ingredient in profit, but extra stock only costs money if it spoils before the next delivery.</li>
+        <li>Order the matching quantile, minus stock already on the shelf that will still be usable, rounded up to the pack size.</li>
+      </ol>
+      <div class="out" id="q-out">Output: order <strong>4 kg</strong> instead of the usual 5 kg</div>
+    </div>
+    <figure>
+      <div class="chart-title">2,000 simulated 3-day demands, as % of forecast</div>
+      <svg id="chart-q" viewBox="0 0 440 230" role="img" aria-label="Histogram of simulated demand with the 80th percentile marked as the order line"></svg>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Order is enough</span><span><i style="background:var(--waste);opacity:.55"></i>Would run out</span></div>
+    </figure>
+  </section>
+
+  <!-- 3. Monte Carlo -->
+  <section class="model-sec">
+    <div class="text">
+      <div class="eyebrow">Model 3 · Expiry risk and waste forecast</div>
+      <h2>Monte Carlo simulation</h2>
+      <p class="q">Will this tomato batch be used before it expires on Friday?</p>
+      <ol class="logic">
+        <li>Simulate 1,000 possible weeks. Each day's sales = forecast × a random past error.</li>
+        <li>In each week, use the earliest-expiring stock first.</li>
+        <li><b>Expiry risk</b> = share of weeks where 5% or more of the batch is still left at expiry.</li>
+        <li><b>Waste forecast</b>: the same simulator runs 4 weeks of deliveries under the usual order and the smart order (200 runs each), and counts the RM thrown away.</li>
+      </ol>
+      <div class="out" id="mc-out">Output: "Use the tomatoes first: <strong>70%</strong> risk of expiring by Friday"</div>
+    </div>
+    <figure>
+      <div class="chart-title">Tomatoes left in the batch (kg), 60 of 1,000 simulated weeks</div>
+      <svg id="chart-mc" viewBox="0 0 440 230" role="img" aria-label="Line chart of simulated stock paths falling toward zero; red paths still have stock at expiry"></svg>
+      <div class="legend"><span><i style="background:var(--waste)"></i>Still left on Friday, so binned</span><span><i style="background:var(--accent)"></i>Used up in time</span></div>
+    </figure>
+  </section>
+
+  <!-- Results -->
+  <section class="results" aria-label="Results on demo data">
+    <div class="result">
+      <div class="eyebrow">Forecast error, weekly</div>
+      <div class="num">8% <s>25%</s></div>
+      <p>Moving average vs the shop's habit order. "Same as last week" scores 12%.</p>
+    </div>
+    <div class="result">
+      <div class="eyebrow">Expiry alerts</div>
+      <div class="num">99% caught</div>
+      <p>Batches that ended in the bin were flagged at 50%+ risk, 2.3 days ahead on average.</p>
+    </div>
+    <div class="result">
+      <div class="eyebrow">Avoidable waste / month</div>
+      <div class="num">RM65 <s>RM713</s></div>
+      <p>Smart order vs usual order, replayed on 4 past weeks. Net saving RM582 after extra run-outs.</p>
+    </div>
+  </section>
+  <p class="note">All figures come from a simulated 90-day kopitiam (docs/pitch-numbers.md). Chart values are illustrative examples from the same models. Re-run on real POS data before quoting externally.</p>
+</main>
+
+<script>
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+  function el(svg, tag, attrs, text) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    svg.appendChild(n);
+    return n;
+  }
+  // Same seeded PRNG as lib/forecast/uncertainty.ts, so the page is stable.
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function quantile(values, q) {
+    const s = [...values].sort((a, b) => a - b);
+    const pos = (s.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+    return s[lo] + (s[hi] - s[lo]) * (pos - lo);
+  }
+
+  // Backtest error ratios (actual / forecast) for 28 days, ~22% daily spread.
+  const rng = mulberry32(7);
+  const ratios = Array.from({ length: 28 }, () => {
+    const z = Math.sqrt(-2 * Math.log(rng() || 1e-9)) * Math.cos(2 * Math.PI * rng());
+    return Math.min(1.7, Math.max(0.5, 1 + 0.22 * z));
+  });
+
+  // Plot frame shared by all charts.
+  const W = 440, H = 230, L = 44, R = 14, T = 16, B = 34;
+  const pw = W - L - R, ph = H - T - B;
+  function yAxis(svg, max, ticks, fmt) {
+    ticks.forEach((v) => {
+      const y = T + ph - (v / max) * ph;
+      el(svg, "line", { x1: L, x2: W - R, y1: y, y2: y, class: "grid-line" });
+      el(svg, "text", { x: L - 8, y: y + 4, "text-anchor": "end" }, fmt(v));
+    });
+  }
+
+  // ---- 1. Moving average ----
+  (function () {
+    const svg = document.getElementById("chart-ma");
+    const past = [1.08, 0.94, 1.12, 0.98];
+    const avg = past.reduce((a, b) => a + b) / past.length;
+    const vals = [...past, avg];
+    const labels = ["4 wks ago", "3 wks ago", "2 wks ago", "Last Mon", "Next Mon"];
+    const max = 1.4;
+    yAxis(svg, max, [0, 0.35, 0.7, 1.05, 1.4], (v) => v.toFixed(2));
+    const slot = pw / vals.length, bw = slot * 0.56;
+    const yOf = (v) => T + ph - (v / max) * ph;
+    vals.forEach((v, i) => {
+      const x = L + slot * i + (slot - bw) / 2;
+      el(svg, "rect", { x, y: yOf(v), width: bw, height: (v / max) * ph, rx: 3, class: i === 4 ? "bar-fc" : "bar-past" });
+      el(svg, "text", { x: x + bw / 2, y: yOf(v) - 6, "text-anchor": "middle", class: i === 4 ? "lbl-accent" : "lbl-strong" }, v.toFixed(2));
+      el(svg, "text", { x: L + slot * i + slot / 2, y: H - B + 18, "text-anchor": "middle" }, labels[i]);
+    });
+    el(svg, "line", { x1: L, x2: L + slot * 4 + (slot - bw) / 2, y1: yOf(avg), y2: yOf(avg), class: "avg-line" });
+    el(svg, "line", { x1: L, x2: W - R, y1: T + ph, y2: T + ph, class: "axis" });
+    document.getElementById("ma-out").textContent = "~" + avg.toFixed(2) + " kg";
+  })();
+
+  // ---- 2. Quantile buffer ----
+  (function () {
+    const svg = document.getElementById("chart-q");
+    const coverDays = 3, level = 0.8; // chicken: 4-day shelf life, delivery every 3 days, lost sale = 3x cost
+    const r = mulberry32(11);
+    const means = [];
+    for (let s = 0; s < 2000; s++) {
+      let sum = 0;
+      for (let d = 0; d < coverDays; d++) sum += ratios[Math.floor(r() * ratios.length)];
+      means.push(sum / coverDays);
+    }
+    const factor = quantile(means, level);
+    const lo = 0.6, hi = 1.5, step = 0.025, nb = Math.round((hi - lo) / step);
+    const bins = new Array(nb).fill(0);
+    means.forEach((m) => { const i = Math.floor((m - lo) / step); if (i >= 0 && i < nb) bins[i]++; });
+    const maxC = Math.ceil(Math.max(...bins) / 50) * 50;
+    yAxis(svg, maxC, [0, maxC / 2, maxC], (v) => String(v));
+    const xOf = (v) => L + ((v - lo) / (hi - lo)) * pw;
+    bins.forEach((c, i) => {
+      const x0 = lo + i * step;
+      el(svg, "rect", { x: xOf(x0) + 0.5, y: T + ph - (c / maxC) * ph, width: pw / nb - 1, height: (c / maxC) * ph, class: x0 + step / 2 <= factor ? "bar-fc" : "bar-run" });
+    });
+    el(svg, "line", { x1: L, x2: W - R, y1: T + ph, y2: T + ph, class: "axis" });
+    [0.6, 0.8, 1.0, 1.2, 1.4].forEach((v) => el(svg, "text", { x: xOf(v), y: H - B + 18, "text-anchor": "middle" }, Math.round(v * 100) + "%"));
+    el(svg, "line", { x1: xOf(1), x2: xOf(1), y1: T, y2: T + ph, class: "fc-line" });
+    el(svg, "text", { x: xOf(1) - 4, y: T + 8, "text-anchor": "end" }, "forecast");
+    el(svg, "line", { x1: xOf(factor), x2: xOf(factor), y1: T, y2: T + ph, class: "cut-line" });
+    el(svg, "text", { x: xOf(factor) + 5, y: T + 8, class: "lbl-strong" }, "order line");
+    el(svg, "text", { x: xOf(factor) + 5, y: T + 22, class: "lbl-strong" }, "80th percentile");
+
+    const forecast = 3.2, shelf = 0.4, pack = 1;
+    const need = forecast * factor - shelf;
+    const order = Math.ceil(need / pack - 1e-9) * pack;
+    document.getElementById("q-out").innerHTML =
+      "Output: 3.2 kg × " + factor.toFixed(2) + " − " + shelf + " kg on shelf = " + need.toFixed(1) +
+      " kg, rounded up to whole packs → order <strong>" + order + " kg</strong> (usual habit: 5 kg). Enough in 8 of 10 delivery cycles.";
+  })();
+
+  // ---- 3. Monte Carlo expiry risk ----
+  (function () {
+    const svg = document.getElementById("chart-mc");
+    const stock = 2.35, daily = 0.4, days = ["Start", "Mon", "Tue", "Wed", "Thu", "Fri"];
+    const r = mulberry32(23);
+    const runs = 1000, shown = 60, paths = [];
+    let binned = 0;
+    for (let k = 0; k < runs; k++) {
+      let left = stock;
+      const p = [left];
+      for (let d = 1; d < days.length; d++) {
+        left = Math.max(0, left - daily * ratios[Math.floor(r() * ratios.length)]);
+        p.push(left);
+      }
+      const bad = left >= stock * 0.05;
+      if (bad) binned++;
+      if (k < shown) paths.push({ p, bad });
+    }
+    const risk = Math.round((binned / runs) * 100);
+    const max = 2.4;
+    yAxis(svg, max, [0, 0.6, 1.2, 1.8, 2.4], (v) => v.toFixed(1));
+    const xOf = (i) => L + 8 + (i / (days.length - 1)) * (pw - 16);
+    const yOf = (v) => T + ph - (v / max) * ph;
+    paths.sort((a, b) => a.bad - b.bad).forEach(({ p, bad }) => {
+      el(svg, "polyline", { points: p.map((v, i) => xOf(i) + "," + yOf(v)).join(" "), class: bad ? "path-bad" : "path-ok" });
+    });
+    el(svg, "line", { x1: L, x2: W - R, y1: T + ph, y2: T + ph, class: "axis" });
+    days.forEach((d, i) => el(svg, "text", { x: xOf(i), y: H - B + 18, "text-anchor": "middle", class: i === 5 ? "lbl-waste" : "" }, i === 5 ? "Fri (exp.)" : d));
+    el(svg, "text", { x: W - R, y: T + 8, "text-anchor": "end", class: "lbl-waste" }, risk + "% of 1,000 weeks: binned");
+    document.getElementById("mc-out").innerHTML = 'Output: "Use the tomatoes first: <strong>' + risk + '%</strong> risk of expiring by Friday"';
+  })();
+})();
+</script>

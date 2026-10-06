@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 48 48" fill="none">
+  <title>LarvaLoop</title>
+  <rect width="48" height="48" rx="11" fill="#C8F25A"/>
+  <g transform="translate(7 7)">
+    <path d="M17 4a13 13 0 1 1-12.4 9" stroke="#0E1F17" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M4.6 6.5v6.5h6.5" stroke="#0E1F17" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="17" cy="17" r="4.5" fill="#F7FAF2" stroke="#0E1F17" stroke-width="2.4"/>
+  </g>
+</svg>

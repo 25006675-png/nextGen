@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap");
+@import "tailwindcss";
+
+/* Palette: LarvaLoop "Forest Loop Bright" (larvaloop/larvaloop/style.css). */
+@theme {
+  --color-canvas: #f7faf2; /* page */
+  --color-surface: #ffffff;
+  --color-line: #dde6d6;
+  --color-ink: #0e1f17;
+  --color-muted: #4a5e50;
+
+  --color-brand: #2f6b3f; /* green */
+  --color-brand-strong: #1f4d36; /* forest */
+  --color-brand-soft: #e9f3dc; /* mint */
+  --color-lime: #c8f25a;
+  --color-lime-deep: #9bcb3c;
+  --color-cream: #fff6dc;
+  --color-larva: #f1e6bf;
+  --color-larva-line: #cdbe8e;
+
+  /* Money lost. LarvaLoop has no red, so this is a muted brick that sits
+     with forest/lime/amber; used only for losses. */
+  --color-loss: #b4432f;
+  --color-loss-soft: #fbeae4;
+
+  --color-warn: #b45309; /* amber text */
+  --color-warn-soft: #fff6dc; /* cream */
+
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+
+  --shadow-card: 0 16px 40px rgba(47, 107, 63, 0.08);
+
+  /* WhatsApp-style order preview only (components/WhatsAppOrder.tsx) */
+  --color-wa-header: #008069;
+  --color-wa-wall: #efeae2;
+  --color-wa-out: #d9fdd3;
+  --color-wa-send: #00a884;
+  --color-wa-tick: #53bdeb;
+  --color-wa-ink: #111b21;
+  --color-wa-meta: #667781;
+  --color-wa-icon: #54656f;
+  --color-wa-grey: #8696a0;
+  --color-wa-avatar: #dfe5e7;
+  --color-wa-bezel: #111111;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Headlines use the LarvaLoop display serif. */
+h1 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
+
+/* "Why this order?" panel: slides up on phones, fades in on larger screens. */
+.why-sheet {
+  animation: why-in 0.22s ease-out;
+}
+@keyframes why-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .why-sheet {
+    animation: none;
+  }
+}
+
+/* WhatsApp-style order preview (components/WhatsAppOrder.tsx) */
+@keyframes wa-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+}
+.wa-in-right {
+  animation: wa-in 0.22s ease-out;
+  transform-origin: bottom right;
+}
+.wa-in-left {
+  animation: wa-in 0.22s ease-out;
+  transform-origin: bottom left;
+}
+.wa-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-wa-grey);
+  animation: wa-dot 1s infinite ease-in-out;
+}
+.wa-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.wa-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes wa-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.wa-pulse {
+  animation: wa-pulse 1.6s infinite;
+}
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(0 168 132 / 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(0 168 132 / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-in-right,
+  .wa-in-left,
+  .wa-dots i,
+  .wa-pulse {
+    animation: none;
+  }
+}
