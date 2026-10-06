@@ -534,7 +534,7 @@ export default async function EsgReportPage() {
               rows={[
                 {
                   label: "CO₂e avoided per kg diverted",
-                  note: "Low end of published estimates for landfilled food waste (about 0.5 to 1.9). Gross: excludes collection transport and farm emissions.",
+                  note: "Just below US EPA WARM v16 for landfilled food waste (0.55 kg/kg; 1.6 where landfills have no gas recovery). Gross: excludes collection transport and farm emissions.",
                   value: `${CO2E_PER_KG_DIVERTED} kg/kg`,
                   basis: "Assumption",
                 },
@@ -606,6 +606,74 @@ export default async function EsgReportPage() {
             <div className="border-t border-ink/40 pt-1 text-xs text-muted">Date</div>
           </div>
         </section>
+
+        <details className="no-print group border-t border-line pt-6 text-sm">
+          <summary className="cursor-pointer list-none text-lg font-bold tracking-tight">
+            <span className="mr-2 inline-block text-brand transition-transform group-open:rotate-90">›</span>
+            How each figure is calculated
+          </summary>
+          <p className="mt-2 text-muted">
+            Every figure in this report, the formula behind it, and where its inputs and factors come from.
+          </p>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[36rem] text-sm">
+              <thead>
+                <tr className="border-b border-line text-left">
+                  <th className={th}>Figure</th>
+                  <th className={`${th} pl-4`}>Calculation</th>
+                  <th className={`${th} pl-4`}>Source</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line align-top">
+                {(
+                  [
+                    ["Food waste generated", "Sum of every waste log: quantity × kg per unit", "Waste logs (staff phone log); kg per unit set per item. Definition: GRI 306-3"],
+                    ["Cost of food wasted", "Sum of each waste log's cost: quantity × the item's unit cost, unless staff entered the cost", "Waste logs; unit cost from item settings"],
+                    ["Diverted from disposal", "Sum of kg in BSF pickups marked Collected", "BSF pickup records with batch code. Definition: GRI 306-4"],
+                    ["Directed to disposal", "Sum of kg of waste not eligible for BSF (cooked leftovers)", "Waste logs. Landfill assumed (section 6). Definition: GRI 306-5"],
+                    ["Awaiting BSF pickup", "BSF-eligible kg not yet in a collected pickup", "Waste logs and pickup records"],
+                    ["Diversion rate", "Diverted kg ÷ food waste generated kg", "Figures above. GRI 306-4"],
+                    ["Waste per 100 kg bought", "Waste kg ÷ kg of ingredients bought × 100, per month and per 30-day window", "Waste logs and ERP purchase records"],
+                    [
+                      "CO₂e avoided",
+                      `Diverted kg × ${CO2E_PER_KG_DIVERTED} kg CO₂e per kg`,
+                      <>
+                        US EPA WARM v16 (Dec 2023), Exhibit 1-10: landfilled food waste, 0.50 t CO₂e per short ton (0.55 kg
+                        per kg, US average landfill). Landfills without gas recovery: 1.45 t per short ton (1.6 kg per kg),
+                        Exhibit 1-49. {CO2E_PER_KG_DIVERTED} is used as the conservative low end.{" "}
+                        <a
+                          className="text-brand underline"
+                          href="https://www.epa.gov/system/files/documents/2023-12/warm_organic_materials_v16_dec.pdf"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          EPA document
+                        </a>
+                        . Reported under GRI 305-5
+                      </>,
+                    ],
+                    ["Frass fertiliser returned", `kg in pickups taken as frass × ${pct(FRASS_YIELD)}`, "Assumed yield, to be confirmed by the partner farm"],
+                    ["Credit due from farm", `kg in pickups taken as credit × ${rm(BSF_CREDIT_PER_KG, 2)} per kg`, "Partner farm contract rate (demo value)"],
+                    ["Pickups fully traceable", "Collected pickups with a batch code and linked waste logs ÷ all collected pickups", "Pickup records and waste logs"],
+                    ["Waste logs with photo evidence", "Waste logs with a photo ÷ all waste logs", "Waste logs"],
+                    ["Baseline vs now (targets)", "First 30 days of records compared with the last 30 days", "Waste logs, purchases and pickups"],
+                    [
+                      "Projected weekly waste and saving",
+                      `Stock simulation of the next 4 weeks (200 runs per item), usual order vs smart order. A missed sale counts as ${LOST_SALE_MULT}× the ingredient cost`,
+                      "POS sales history and ERP stock. Lost-sale multiple is an internal assumption",
+                    ],
+                  ] as [string, string, React.ReactNode][]
+                ).map(([figure, calc, source]) => (
+                  <tr key={figure}>
+                    <td className="py-2 font-medium">{figure}</td>
+                    <td className="py-2 pl-4">{calc}</td>
+                    <td className="py-2 pl-4 text-muted">{source}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </article>
     </div>
   );
